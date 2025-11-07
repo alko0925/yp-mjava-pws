@@ -42,4 +42,8 @@ public class PostService {
 
         return new PostsSearchResponse(posts, hasPrev, hasNext, lastPage);
     }
+
+    public Post getPost(Integer id) {
+        return postRepository.getPost(id);
+    }
 }

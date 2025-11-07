@@ -96,4 +96,21 @@ public class PostgreSQLPostRepository implements PostRepository {
         if (tagsStr.equals("[]")) return List.of();
         else return Arrays.stream(tagsStr.substring(1, tagsStr.length() - 1).split(", ")).toList();
     }
+
+    @Override
+    public Post getPost(Integer id) {
+        StringBuilder sqlBuilder = new StringBuilder(BASE_POST_SEARCH_QUERY);
+        sqlBuilder.append(" WHERE ").append("id = ").append(id);
+
+        return jdbcTemplate.query(
+                sqlBuilder.toString(),
+                (rs, rowNum) -> new Post(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("text"),
+                        convertStrtoList(rs.getString("tags")),
+                        rs.getInt("likesCount"),
+                        rs.getInt("commentsCount")
+                )).getFirst();
+    }
 }

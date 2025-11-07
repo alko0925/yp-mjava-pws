@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface PostRepository {
     List<Post> getPosts(String search);
+    Post getPost(Integer id);
 }

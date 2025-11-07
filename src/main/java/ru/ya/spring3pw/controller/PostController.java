@@ -31,4 +31,9 @@ public class PostController {
                                         @RequestParam("pageSize") Integer pageSize) {
         return service.getPosts(search, pageNumber, pageSize);
     }
+
+    @GetMapping(value = "/{post_id}")
+    public Post getPost(@PathVariable("post_id") Integer post_id) {
+        return service.getPost(post_id);
+    }
 }
