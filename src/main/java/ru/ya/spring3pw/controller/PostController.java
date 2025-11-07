@@ -36,4 +36,15 @@ public class PostController {
     public Post getPost(@PathVariable("post_id") Integer post_id) {
         return service.getPost(post_id);
     }
+
+    @PostMapping(consumes = {"application/json"})
+    public Post addPost(@RequestBody Post post) {
+        return service.addPost(post);
+    }
+
+    @PutMapping(value = "/{post_id}", consumes = {"application/json"})
+    public Post editPost(@RequestBody Post post) {
+        return service.editPost(post);
+    }
+
 }

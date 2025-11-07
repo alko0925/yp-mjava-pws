@@ -46,4 +46,13 @@ public class PostService {
     public Post getPost(Integer id) {
         return postRepository.getPost(id);
     }
+
+    public Post addPost(Post post) {
+        return postRepository.addPost(post);
+    }
+
+    public Post editPost(Post post) {
+        return postRepository.editPost(post);
+    }
+
 }

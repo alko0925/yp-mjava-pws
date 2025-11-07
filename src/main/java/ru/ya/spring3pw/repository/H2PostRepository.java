@@ -113,4 +113,25 @@ public class H2PostRepository implements PostRepository {
                         rs.getInt("commentsCount")
                 )).getFirst();
     }
+
+    @Override
+    public Post addPost(Post post) {
+        Integer post_id = jdbcTemplate.queryForObject("SELECT nextval('seq_post_id')", Integer.class);
+        post.setId(post_id);
+        post.setLikesCount(0);
+        post.setCommentsCount(0);
+
+        jdbcTemplate.update("INSERT INTO posts(id, title, text, tags) VALUES(?, ?, ?, ?)",
+                post.getId(), post.getTitle(), post.getText(), post.getTags().toString());
+
+        return post;
+    }
+
+    @Override
+    public Post editPost(Post post) {
+        jdbcTemplate.update("UPDATE posts SET title = ?, text = ?, tags = ? WHERE id = ?",
+                post.getTitle(), post.getText(), post.getTags().toString(), post.getId());
+
+        return getPost(post.getId());
+    }
 }
