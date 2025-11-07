@@ -24,3 +24,14 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=pga_pwd
     depends_on:
       - yp-db
+      
+  yp-tomcat:
+    container_name: yp-tomcat
+    build:
+      context: ./docker-compose/tomcat/
+      dockerfile: Dockerfile
+    image: yp-tomcat
+    ports:
+      - "8080:8080"
+    depends_on:
+      - yp-pgadmin

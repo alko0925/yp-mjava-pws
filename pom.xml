@@ -95,6 +95,10 @@
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
           <version>3.4.0</version>
+          <configuration>
+            <warName>api</warName>
+            <outputDirectory>${project.basedir}/docker-compose/tomcat</outputDirectory>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
