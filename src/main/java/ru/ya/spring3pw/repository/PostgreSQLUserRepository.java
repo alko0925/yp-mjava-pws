@@ -1,17 +1,20 @@
 package ru.ya.spring3pw.repository;
 
+import org.springframework.context.annotation.Conditional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.ya.spring3pw.model.User;
+import ru.ya.spring3pw.repository.condition.PostgreSQLDataBaseCondition;
 
 import java.util.List;
 
 @Repository
-public class JdbcNativeUserRepository implements UserRepository {
+@Conditional(PostgreSQLDataBaseCondition.class)
+public class PostgreSQLUserRepository implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public JdbcNativeUserRepository(JdbcTemplate jdbcTemplate) {
+    public PostgreSQLUserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
