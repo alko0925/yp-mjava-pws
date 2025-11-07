@@ -111,4 +111,55 @@ class PostControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.posts", hasSize(4)));
     }
+
+    @Test
+    void editPost_acceptsJson_andPersists() throws Exception {
+        String json = """
+                  {"id":"1", "title":"New Title","text":"Post Text #1","tags":[]}
+                """;
+
+        mockMvc.perform(put("/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.*", hasSize(6)))
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.title").value("New Title"));
+
+        mockMvc.perform(get("/posts/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.*", hasSize(6)))
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.title").value("New Title"));
+    }
+
+
+    @Test
+    void deletePost_removeFromDatbase() throws Exception {
+        mockMvc.perform(delete("/posts/1"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/posts?search=Post&pageNumber=1&pageSize=5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.posts", hasSize(2)));
+    }
+
+    @Test
+    void addLike_AndDownloadAvatar_success() throws Exception {
+
+        mockMvc.perform(post("/posts/1/likes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(1));
+    }
+
+    @Test
+    void getComments_returnsJsonArray() throws Exception {
+
+        mockMvc.perform(get("/posts/3/comments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[1].text").value("Comment Text #2"));
+    }
 }
