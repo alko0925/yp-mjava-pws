@@ -46,11 +46,69 @@ class PostControllerIntegrationTest {
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+        //mockMvc = standaloneSetup(userController).build();
+
+        jdbcTemplate.execute("DELETE FROM posts");
+
+        jdbcTemplate.update(
+                "INSERT INTO posts(id, title, text, tags) VALUES(?, ?, ?, ?)",
+                1, "Post #1", "Post Text #1", List.of().toString()
+        );
+        jdbcTemplate.update(
+                "INSERT INTO posts(id, title, text, tags) VALUES(?, ?, ?, ?)",
+                2, "Post 2", "Post Text #2", List.of().toString()
+        );
+        jdbcTemplate.update(
+                "INSERT INTO posts(id, title, text, tags) VALUES(?, ?, ?, ?)",
+                3, "Post #3", "Post Text #3", List.of().toString()
+        );
+
+        jdbcTemplate.update(
+                "INSERT INTO comments(id, text, post_id) VALUES(?, ?, ?)",
+                1, "Comment Text #1", 3
+        );
+        jdbcTemplate.update(
+                "INSERT INTO comments(id, text, post_id) VALUES(?, ?, ?)",
+                2, "Comment Text #2", 3
+        );
     }
 
     @Test
     void getPosts_returnsJsonArray() throws Exception {
         mockMvc.perform(get("/posts?search=Post&pageNumber=1&pageSize=5"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.posts", hasSize(3)))
+                .andExpect(jsonPath("$.posts[0].title").value("Post #1"))
+                .andExpect(jsonPath("$.posts[1].title").value("Post 2"))
+                .andExpect(jsonPath("$.posts[2].title").value("Post #3"));
+    }
+
+    @Test
+    void getPost_returnsJsonPost() throws Exception {
+        mockMvc.perform(get("/posts/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.*", hasSize(6)))
+                .andExpect(jsonPath("$.title").value("Post #1"));
+    }
+
+    @Test
+    void addPost_acceptsJson_andPersists() throws Exception {
+        String json = """
+                  {"title":"Post #4","text":"Post Text #4","tags":[]}
+                """;
+
+        mockMvc.perform(post("/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.*", hasSize(6)))
+                .andExpect(jsonPath("$.title").value("Post #4"));
+
+        mockMvc.perform(get("/posts?search=Post&pageNumber=1&pageSize=5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.posts", hasSize(4)));
     }
 }
