@@ -14,3 +14,13 @@ services:
       - POSTGRES_USER=yp_user
       - POSTGRES_PASSWORD=yp_pwd
       - POSTGRES_DB=yp_db
+      
+  yp-pgadmin:
+    container_name: yp-pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=yp_user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=pga_pwd
+    depends_on:
+      - yp-db
