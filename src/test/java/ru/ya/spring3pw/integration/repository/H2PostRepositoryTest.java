@@ -131,4 +131,62 @@ class H2PostRepositoryTest {
         Post post = postRepository.getPost(1);
         assertEquals(1, post.getLikesCount());
     }
+
+    @Test
+    void getComments_shouldReturnAllCommentsForPost() {
+        List<Comment> comments = postRepository.getComments(3);
+
+        assertNotNull(comments);
+        assertEquals(2, comments.size());
+    }
+
+    @Test
+    void getComment_shouldReturnSpecificCommentForPost() {
+        Comment comment = postRepository.getComment(3, 2);
+
+        assertNotNull(comment);
+        assertEquals(2, comment.getId());
+        assertEquals("Comment Text #2", comment.getText());
+        assertEquals(3, comment.getPostId());
+    }
+
+    @Test
+    void addComment_shouldAddCommentToPost() {
+        Comment comment = new Comment();
+        comment.setText("New Comment Text");
+        comment.setPostId(3);
+
+        Comment result1 = postRepository.addComment(3, comment);
+        List<Comment> result2 = postRepository.getComments(3);
+        assertNotNull(result1);
+        assertEquals("New Comment Text", result1.getText());
+        assertEquals(3, result1.getPostId());
+
+        assertNotNull(result2);
+        assertEquals(3, result2.size());
+    }
+
+    @Test
+    void editComment_shouldEditCommentForPost() {
+        Comment comment = new Comment();
+        comment.setId(1);
+        comment.setText("New Comment Text");
+        comment.setPostId(3);
+
+        Comment result = postRepository.editComment(comment);
+
+        assertNotNull(result);
+        assertEquals(1, result.getId());
+        assertEquals("New Comment Text", result.getText());
+        assertEquals(3, result.getPostId());
+    }
+
+    @Test
+    void deletePost_shouldRemoveCommentFromPost() {
+        postRepository.deleteComment(1);
+
+        List<Comment> comments = postRepository.getComments(3);
+        assertEquals(1, comments.size());
+        assertTrue(comments.stream().noneMatch(c -> c.getId().equals(1)));
+    }
 }
