@@ -18,6 +18,28 @@ public class PostService {
     }
 
     public PostsSearchResponse getPosts(String search, Integer pageNumber, Integer pageSize) {
-        return new PostsSearchResponse();
+        List<Post> posts = postRepository.getPosts(search);
+        boolean hasPrev = false;
+        boolean hasNext = false;
+        int lastPage = 0;
+
+        if (posts.size() <= pageSize) lastPage = 1;
+        else {
+            lastPage = posts.size() / pageSize;
+            lastPage = (posts.size() % pageSize == 0) ? lastPage : lastPage + 1;
+        }
+
+        if (pageNumber == 1) {
+            posts = posts.stream().limit(pageSize).toList();
+            hasNext = lastPage > pageNumber;
+        } else if (pageNumber <= lastPage) {
+            posts = posts.stream().skip((long) (pageNumber - 1) * pageSize).limit(pageSize).toList();
+            hasPrev = true;
+            hasNext = lastPage > pageNumber;
+        } else {
+            posts = List.of();
+        }
+
+        return new PostsSearchResponse(posts, hasPrev, hasNext, lastPage);
     }
 }
