@@ -55,4 +55,13 @@ public class PostService {
         return postRepository.editPost(post);
     }
 
+    public void deletePost(Integer id) {
+        postRepository.deletePost(id);
+    }
+
+    public Integer addLike(Integer id) {
+        return postRepository.addLike(id);
+    }
+
+
 }

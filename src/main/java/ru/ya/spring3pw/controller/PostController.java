@@ -61,4 +61,13 @@ public class PostController {
                 .body(file);
     }
 
+    @DeleteMapping(value = "/{post_id}")
+    public void deletePost(@PathVariable(name = "post_id") Integer post_id) {
+        service.deletePost(post_id);
+    }
+
+    @PostMapping(value = "/{post_id}/likes")
+    public Integer addLike(@PathVariable(name = "post_id") Integer post_id) {
+        return service.addLike(post_id);
+    }
 }

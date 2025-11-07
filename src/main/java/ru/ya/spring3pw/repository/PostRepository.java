@@ -9,4 +9,6 @@ public interface PostRepository {
     Post getPost(Integer id);
     Post addPost(Post user);
     Post editPost(Post post);
+    void deletePost(Integer id);
+    Integer addLike(Integer id);
 }

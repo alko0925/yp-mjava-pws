@@ -134,4 +134,15 @@ public class H2PostRepository implements PostRepository {
 
         return getPost(post.getId());
     }
+
+    @Override
+    public void deletePost(Integer id) {
+        jdbcTemplate.update("DELETE FROM posts WHERE id = ?", id);
+    }
+
+    @Override
+    public Integer addLike(Integer id) {
+        jdbcTemplate.update("UPDATE posts SET likesCount = likesCount + 1 WHERE id = ?", id);
+        return jdbcTemplate.queryForObject("SELECT likesCount FROM posts WHERE id = ?", Integer.class, id);
+    }
 }
