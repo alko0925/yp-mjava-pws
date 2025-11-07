@@ -47,4 +47,18 @@ public class PostController {
         return service.editPost(post);
     }
 
+    @PutMapping(value = "/{post_id}/image")
+    public String uploadImage(@PathVariable("post_id") Integer post_id,
+                              @RequestParam("image") MultipartFile image) {
+        return filesService.upload(post_id, image);
+    }
+
+    @GetMapping("/{post_id}/image")
+    public ResponseEntity<Resource> downloadImage(@PathVariable(name = "post_id") Integer post_id) {
+        Resource file = filesService.download(post_id);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(file);
+    }
+
 }

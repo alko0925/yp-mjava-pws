@@ -27,13 +27,13 @@ public class FilesController {
     // POST-эндпоинт для загрузки файла
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
-        return filesService.upload(file);
+        return filesService.upload(1, file);
     }
 
     // GET-эндпоинт для скачивания файла
     @GetMapping("/download/{filename}")
     public ResponseEntity<Resource> downloadFile(@PathVariable(name = "filename") String filename) {
-        Resource file = filesService.download(filename);
+        Resource file = filesService.download(1);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(file);

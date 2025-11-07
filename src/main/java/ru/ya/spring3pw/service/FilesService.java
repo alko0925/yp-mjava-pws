@@ -2,11 +2,6 @@ package ru.ya.spring3pw.service;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +15,7 @@ public class FilesService {
 
     public static final String UPLOAD_DIR = "uploads/";
 
-    public String upload(MultipartFile file) {
+    public String upload(Integer id, MultipartFile file) {
         try {
             Path uploadDir = Paths.get(UPLOAD_DIR);
             if (!Files.exists(uploadDir)) {
@@ -28,7 +23,7 @@ public class FilesService {
             }
 
             // Сохраняем файл
-            Path filePath = uploadDir.resolve(file.getOriginalFilename());
+            Path filePath = uploadDir.resolve(id+"_image");
             file.transferTo(filePath);
 
             return file.getOriginalFilename();
@@ -37,9 +32,9 @@ public class FilesService {
         }
     }
 
-    public Resource download(String filename) {
+    public Resource download(Integer id) {
         try {
-            Path filePath = Paths.get(UPLOAD_DIR).resolve(filename).normalize();
+            Path filePath = Paths.get(UPLOAD_DIR).resolve(id+"_image").normalize();
             byte[] content = Files.readAllBytes(filePath);
 
             return new ByteArrayResource(content);
