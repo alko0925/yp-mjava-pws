@@ -70,4 +70,15 @@ public class PostController {
     public Integer addLike(@PathVariable(name = "post_id") Integer post_id) {
         return service.addLike(post_id);
     }
+
+    @GetMapping(value = "/{post_id}/comments")
+    public List<Comment> getComments(@PathVariable("post_id") Integer post_id) {
+        return service.getComments(post_id);
+    }
+
+    @GetMapping(value = "/{post_id}/comments/{comment_id}")
+    public Comment getComment(@PathVariable("post_id") Integer post_id,
+                              @PathVariable("comment_id") Integer comment_id) {
+        return service.getComment(post_id, comment_id);
+    }
 }

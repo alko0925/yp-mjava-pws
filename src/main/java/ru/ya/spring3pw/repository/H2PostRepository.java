@@ -145,4 +145,23 @@ public class H2PostRepository implements PostRepository {
         jdbcTemplate.update("UPDATE posts SET likesCount = likesCount + 1 WHERE id = ?", id);
         return jdbcTemplate.queryForObject("SELECT likesCount FROM posts WHERE id = ?", Integer.class, id);
     }
+
+    @Override
+    public List<Comment> getComments(Integer id) {
+        StringBuilder sqlBuilder = new StringBuilder(BASE_COMMENT_SEARCH_QUERY);
+        sqlBuilder.append(" WHERE ").append("post_id = ").append(id);
+
+        return jdbcTemplate.query(
+                sqlBuilder.toString(),
+                (rs, rowNum) -> new Comment(
+                        rs.getInt("id"),
+                        rs.getString("text"),
+                        rs.getInt("post_id")
+                ));
+    }
+
+    @Override
+    public Comment getComment(Integer post_id, Integer comment_id) {
+        return getComments(post_id).stream().filter((comment) -> comment.getId().equals(comment_id)).findFirst().orElse(new Comment());
+    }
 }

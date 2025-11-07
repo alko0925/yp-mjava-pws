@@ -63,5 +63,12 @@ public class PostService {
         return postRepository.addLike(id);
     }
 
+    public List<Comment> getComments(Integer id) {
+        return postRepository.getComments(id);
+    }
+
+    public Comment getComment(Integer post_id, Integer comment_id) {
+        return postRepository.getComment(post_id, comment_id);
+    }
 
 }
