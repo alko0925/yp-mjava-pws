@@ -81,4 +81,20 @@ public class PostController {
                               @PathVariable("comment_id") Integer comment_id) {
         return service.getComment(post_id, comment_id);
     }
+
+    @PostMapping(value = "/{post_id}/comments")
+    public Comment addComment(@PathVariable(name = "post_id") Integer post_id,
+                              @RequestBody Comment comment) {
+        return service.addComment(post_id, comment);
+    }
+
+    @PutMapping(value = "/{post_id}/comments/{comment_id}", consumes = {"application/json"})
+    public Comment editComment(@RequestBody Comment comment) {
+        return service.editComment(comment);
+    }
+
+    @DeleteMapping(value = "/{post_id}/comments/{comment_id}")
+    public void deleteComment(@PathVariable("comment_id") Integer comment_id) {
+        service.deleteComment(comment_id);
+    }
 }

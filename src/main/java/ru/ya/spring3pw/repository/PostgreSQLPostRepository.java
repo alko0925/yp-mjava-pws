@@ -1,11 +1,12 @@
 package ru.ya.spring3pw.repository;
 
+import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.context.annotation.Conditional;
 import ru.ya.spring3pw.model.Comment;
 import ru.ya.spring3pw.model.Post;
+import ru.ya.spring3pw.repository.condition.H2DataBaseCondition;
 import ru.ya.spring3pw.repository.condition.PostgreSQLDataBaseCondition;
 
 import java.util.Arrays;
@@ -163,5 +164,29 @@ public class PostgreSQLPostRepository implements PostRepository {
     @Override
     public Comment getComment(Integer post_id, Integer comment_id) {
         return getComments(post_id).stream().filter((comment) -> comment.getId().equals(comment_id)).findFirst().orElse(new Comment());
+    }
+
+    @Override
+    public Comment addComment(Integer post_id, Comment comment){
+        Integer comment_id = jdbcTemplate.queryForObject("SELECT nextval('seq_comment_id')", Integer.class);
+        comment.setId(comment_id);
+
+        jdbcTemplate.update("INSERT INTO comments(id, text, post_id) VALUES(?, ?, ?)",
+                comment.getId(), comment.getText(), comment.getPostId());
+
+        return comment;
+    }
+
+    @Override
+    public Comment editComment(Comment comment) {
+        jdbcTemplate.update("UPDATE comments SET text = ? WHERE id = ?",
+                comment.getText(), comment.getId());
+
+        return getComment(comment.getPostId(), comment.getId());
+    }
+
+    @Override
+    public void deleteComment(Integer comment_id) {
+        jdbcTemplate.update("DELETE FROM comments WHERE id = ?", comment_id);
     }
 }

@@ -71,4 +71,15 @@ public class PostService {
         return postRepository.getComment(post_id, comment_id);
     }
 
+    public Comment addComment(Integer post_id, Comment comment) {
+        return postRepository.addComment(post_id, comment);
+    }
+
+    public Comment editComment(Comment comment){
+        return postRepository.editComment(comment);
+    }
+
+    public void deleteComment(Integer comment_id) {
+        postRepository.deleteComment(comment_id);
+    }
 }

@@ -13,4 +13,7 @@ public interface PostRepository {
     Integer addLike(Integer id);
     List<Comment> getComments(Integer id);
     Comment getComment(Integer post_id, Integer comment_id);
+    Comment addComment(Integer post_id, Comment comment);
+    Comment editComment(Comment comment);
+    void deleteComment(Integer comment_id);
 }
