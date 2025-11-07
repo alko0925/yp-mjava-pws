@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  yp-db:
+    container_name: yp-db
+    build:
+      context: ./docker-compose/postgresql-db
+      dockerfile: Dockerfile
+    image: yp-db
+    ports:
+      - "5434:5434"
+    restart: always
+    environment:
+      - POSTGRES_USER=yp_user
+      - POSTGRES_PASSWORD=yp_pwd
+      - POSTGRES_DB=yp_db
