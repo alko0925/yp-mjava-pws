@@ -1,6 +1,5 @@
 package ru.ya.spring3pw.configuration;
 
-import org.h2.Driver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
