@@ -12,7 +12,6 @@ import ru.ya.spring3pw.model.Post;
 import ru.ya.spring3pw.repository.H2PostRepository;
 import ru.ya.spring3pw.repository.PostRepository;
 
-
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
