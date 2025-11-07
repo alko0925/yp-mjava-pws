@@ -132,4 +132,59 @@ class PostServiceTest {
         assertEquals(3, result.size(), "Wrong number of comments");
         verify(postRepository, times(1)).getComments(post_id);
     }
+
+    @Test
+    void testGetComment() {
+        Integer post_id = 1;
+        Integer comment_id = 1;
+
+        Comment comment = new Comment(1, "Test Comment Text 1", post_id);
+
+        doReturn(comment).when(postRepository).getComment(post_id, comment_id);
+        Comment result  = postService.getComment(post_id, comment_id);
+
+        assertEquals(post_id, result.getPostId(), "Wrong post_id of comment");
+        assertEquals(comment_id, result.getId(), "Wrong id of comment");
+        verify(postRepository, times(1)).getComment(post_id, comment_id);
+    }
+
+    @Test
+    void testAddComment() {
+        Integer post_id = 1;
+        Integer comment_id = 1;
+
+        Comment comment = new Comment(1, "Test Comment Text 1", post_id);
+
+        doReturn(comment).when(postRepository).addComment(post_id, comment);
+        Comment result  = postService.addComment(post_id, comment);
+
+        assertEquals(post_id, result.getPostId(), "Wrong post_id of comment");
+        assertEquals(comment_id, result.getId(), "Wrong id of comment");
+        verify(postRepository, times(1)).addComment(post_id, comment);
+    }
+
+    @Test
+    void testEditComment() {
+        Integer post_id = 1;
+        Integer comment_id = 1;
+
+        Comment comment = new Comment(1, "Test Comment Text 1", post_id);
+
+        doReturn(comment).when(postRepository).editComment(comment);
+        Comment result  = postService.editComment(comment);
+
+        assertEquals(post_id, result.getPostId(), "Wrong post_id of comment");
+        assertEquals(comment_id, result.getId(), "Wrong id of comment");
+        verify(postRepository, times(1)).editComment(comment);
+    }
+
+    @Test
+    void testDeleteComment() {
+        Integer comment_id = 1;
+
+        doNothing().when(postRepository).deleteComment(comment_id);
+        postService.deleteComment(comment_id);
+
+        verify(postRepository, times(1)).deleteComment(comment_id);
+    }
 }
