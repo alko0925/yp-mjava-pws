@@ -4,7 +4,7 @@ services:
   yp-db:
     container_name: yp-db
     build:
-      context: ./docker-compose/db
+      context: ./docker-compose/postgresql-db
       dockerfile: Dockerfile
     image: yp-db
     ports:
