@@ -1,6 +1,4 @@
-
-FROM nginx:1.29.0
+FROM nginx
 COPY ./dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d
-EXPOSE 80
+COPY yp-nginx.conf /etc/nginx/conf.d/default.conf
 CMD ["nginx", "-g", "daemon off;"]

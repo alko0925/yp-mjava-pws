@@ -4,7 +4,7 @@ services:
   yp-db:
     container_name: yp-db
     build:
-      context: ./docker-compose/postgresql-db
+      context: ./docker-compose/db
       dockerfile: Dockerfile
     image: yp-db
     ports:
@@ -14,7 +14,7 @@ services:
       - POSTGRES_USER=yp_user
       - POSTGRES_PASSWORD=yp_pwd
       - POSTGRES_DB=yp_db
-      
+
   yp-pgadmin:
     container_name: yp-pgadmin
     image: dpage/pgadmin4
@@ -35,3 +35,14 @@ services:
       - "8080:8080"
     depends_on:
       - yp-pgadmin
+      
+  yp-gw:
+    container_name: yp-gw
+    build:
+      context: ./docker-compose/nginx/front-app
+      dockerfile: Dockerfile
+    image: yp-gw
+    ports:
+      - "80:80"
+    depends_on:
+      - yp-tomcat
