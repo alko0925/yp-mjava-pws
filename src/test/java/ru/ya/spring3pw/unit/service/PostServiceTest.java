@@ -94,4 +94,42 @@ class PostServiceTest {
         assertEquals(post_id, result.getId(), "Post was not edited properly");
         verify(postRepository, times(1)).editPost(post);
     }
+
+    @Test
+    void testDeletePost() {
+        Integer post_id = 1;
+
+        doNothing().when(postRepository).deletePost(post_id);
+        postService.deletePost(post_id);
+
+        verify(postRepository, times(1)).deletePost(post_id);
+    }
+
+    @Test
+    void testAddLike() {
+        Integer post_id = 1;
+        Integer actualLikesCount = 7;
+
+        when(postRepository.addLike(post_id)).thenReturn(actualLikesCount);
+        Integer result = postService.addLike(post_id);
+
+        assertEquals(actualLikesCount, result, "Expected count of likes is wrong");
+        verify(postRepository, times(1)).addLike(post_id);
+    }
+
+    @Test
+    void testGetComments() {
+        Integer post_id = 1;
+
+        List<Comment> comments = new ArrayList<>();
+        comments.add(new Comment(1, "Test Comment Text 1", post_id));
+        comments.add(new Comment(2, "Test Comment Text 2", post_id));
+        comments.add(new Comment(3, "Test Comment Text 3", post_id));
+
+        doReturn(comments).when(postRepository).getComments(post_id);
+        List<Comment> result  = postService.getComments(post_id);
+
+        assertEquals(3, result.size(), "Wrong number of comments");
+        verify(postRepository, times(1)).getComments(post_id);
+    }
 }
