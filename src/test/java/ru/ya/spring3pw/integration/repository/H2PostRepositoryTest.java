@@ -84,4 +84,51 @@ class H2PostRepositoryTest {
         assertEquals("Post #1", post.getTitle());
         assertEquals("Post Text #1", post.getText());
     }
+
+    @Test
+    void addPost_shouldAddPostToDatabase() {
+        Post post = new Post();
+        post.setTitle("New Post");
+        post.setText("New Post Text");
+        post.setTags(List.of());
+
+        Post result = postRepository.addPost(post);
+
+        assertNotNull(result);
+        assertEquals("New Post", result.getTitle());
+        assertEquals("New Post Text", result.getText());
+    }
+
+    @Test
+    void editPost_shouldEditPostInDatabase() {
+        Post post = new Post();
+        post.setId(1);
+        post.setTitle("New Post");
+        post.setText("New Post Text");
+        post.setTags(List.of());
+
+        Post result = postRepository.editPost(post);
+
+        assertNotNull(result);
+        assertEquals(1, post.getId());
+        assertEquals("New Post", result.getTitle());
+        assertEquals("New Post Text", result.getText());
+    }
+
+    @Test
+    void deletePost_shouldRemovePostFromDatabase() {
+        postRepository.deletePost(1);
+
+        List<Post> posts = postRepository.getPosts("");
+        assertEquals(2, posts.size());
+        assertTrue(posts.stream().noneMatch(p -> p.getId().equals(1)));
+    }
+
+    @Test
+    void addLike_shouldAddOneLikeToPost() {
+        postRepository.addLike(1);
+
+        Post post = postRepository.getPost(1);
+        assertEquals(1, post.getLikesCount());
+    }
 }
