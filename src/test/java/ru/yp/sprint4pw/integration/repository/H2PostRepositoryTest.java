@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.ya.spring3pw.configuration.DataSourceConfiguration;
 import ru.ya.spring3pw.model.Comment;
 import ru.ya.spring3pw.model.Post;
 import ru.ya.spring3pw.repository.H2PostRepository;

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.ya.spring3pw.dto.PostsSearchResponse;
+import ru.yp.sprint4pw.controller.dto.PostsSearchResponse;
 import ru.ya.spring3pw.model.Comment;
 import ru.ya.spring3pw.model.Post;
 import ru.ya.spring3pw.repository.PostRepository;

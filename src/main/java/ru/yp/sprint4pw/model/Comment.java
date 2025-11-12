@@ -1,7 +1,5 @@
 package ru.yp.sprint4pw.model;
 
-import java.util.List;
-
 public class Comment {
     private Integer id;
     private String text;

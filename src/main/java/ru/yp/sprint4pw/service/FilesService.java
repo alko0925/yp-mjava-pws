@@ -1,4 +1,4 @@
-package ru.ya.spring3pw.service;
+package ru.yp.sprint4pw.service;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;

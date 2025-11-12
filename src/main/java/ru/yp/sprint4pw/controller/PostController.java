@@ -1,15 +1,15 @@
-package ru.ya.spring3pw.controller;
+package ru.yp.sprint4pw.controller;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.ya.spring3pw.dto.PostsSearchResponse;
-import ru.ya.spring3pw.model.Comment;
-import ru.ya.spring3pw.model.Post;
-import ru.ya.spring3pw.service.FilesService;
-import ru.ya.spring3pw.service.PostService;
+import ru.yp.sprint4pw.controller.dto.PostsSearchResponse;
+import ru.yp.sprint4pw.model.Comment;
+import ru.yp.sprint4pw.model.Post;
+import ru.yp.sprint4pw.service.FilesService;
+import ru.yp.sprint4pw.service.PostService;
 
 import java.util.List;
 

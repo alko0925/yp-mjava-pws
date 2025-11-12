@@ -1,10 +1,10 @@
-package ru.ya.spring3pw.service;
+package ru.yp.sprint4pw.service;
 
 import org.springframework.stereotype.Service;
-import ru.ya.spring3pw.dto.PostsSearchResponse;
-import ru.ya.spring3pw.model.Comment;
-import ru.ya.spring3pw.model.Post;
-import ru.ya.spring3pw.repository.PostRepository;
+import ru.yp.sprint4pw.controller.dto.PostsSearchResponse;
+import ru.yp.sprint4pw.model.Comment;
+import ru.yp.sprint4pw.model.Post;
+import ru.yp.sprint4pw.repository.PostRepository;
 
 import java.util.List;
 
