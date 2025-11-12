@@ -1,4 +1,4 @@
-package ru.ya.spring3pw.model;
+package ru.yp.sprint4pw.model;
 
 import java.util.List;
 

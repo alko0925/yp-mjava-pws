@@ -1,20 +1,16 @@
-package ru.ya.spring3pw.repository;
+package ru.yp.sprint4pw.repository;
 
-import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.ya.spring3pw.model.Comment;
-import ru.ya.spring3pw.model.Post;
-import ru.ya.spring3pw.repository.condition.H2DataBaseCondition;
-import ru.ya.spring3pw.repository.condition.PostgreSQLDataBaseCondition;
+import ru.yp.sprint4pw.model.Comment;
+import ru.yp.sprint4pw.model.Post;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Repository
-@Conditional(PostgreSQLDataBaseCondition.class)
-public class PostgreSQLPostRepository implements PostRepository {
+public class JdbcPostRepository implements PostRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final Environment environment;
@@ -37,7 +33,7 @@ public class PostgreSQLPostRepository implements PostRepository {
                 FROM comments
             """;
 
-    public PostgreSQLPostRepository(JdbcTemplate jdbcTemplate, Environment environment) {
+    public JdbcPostRepository(JdbcTemplate jdbcTemplate, Environment environment) {
         this.jdbcTemplate = jdbcTemplate;
         this.environment = environment;
     }

@@ -1,7 +1,7 @@
-package ru.ya.spring3pw.repository;
+package ru.yp.sprint4pw.repository;
 
-import ru.ya.spring3pw.model.Comment;
-import ru.ya.spring3pw.model.Post;
+import ru.yp.sprint4pw.model.Comment;
+import ru.yp.sprint4pw.model.Post;
 import java.util.List;
 
 public interface PostRepository {
