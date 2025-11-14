@@ -1,17 +1,24 @@
 spring:
   application:
-    name: sprint4-my-blog-app
+    name: yp-mjava-pws
+
+  sql:
+    init:
+     platform: postgresql
+     mode: always
 
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    schema: classpath:postgresql_schema.sql
 
 post:
   shorttext:
     size: 128
+
+server:
+  port: 8080
 
 ---
 
@@ -20,9 +27,12 @@ spring:
     activate:
       on-profile: isolation
 
+  sql:
+    init:
+      platform: h2
+
   datasource:
     url: jdbc:h2:mem:usersdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
     driver-class-name: org.h2.Driver
-    schema: classpath:h2_schema.sql
