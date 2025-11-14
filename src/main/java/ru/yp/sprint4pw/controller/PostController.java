@@ -13,8 +13,9 @@ import ru.yp.sprint4pw.service.PostService;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 public class PostController {
 
     private final PostService service;
