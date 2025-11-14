@@ -1,16 +1,18 @@
-package ru.ya.spring3pw.unit.service;
+package ru.yp.sprint4pw.unit.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yp.sprint4pw.controller.dto.PostsSearchResponse;
-import ru.ya.spring3pw.model.Comment;
-import ru.ya.spring3pw.model.Post;
-import ru.ya.spring3pw.repository.PostRepository;
-import ru.ya.spring3pw.service.PostService;
-import ru.ya.spring3pw.unit.service.configuration.TestConfiguration;
+import ru.yp.sprint4pw.model.Comment;
+import ru.yp.sprint4pw.model.Post;
+import ru.yp.sprint4pw.repository.PostRepository;
+import ru.yp.sprint4pw.service.PostService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +20,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(classes = TestConfiguration.class)
-@ActiveProfiles("test")
+
+@SpringBootTest
 class PostServiceTest {
 
-    @Autowired
+    @MockitoBean
     private PostRepository postRepository;
 
     @Autowired
