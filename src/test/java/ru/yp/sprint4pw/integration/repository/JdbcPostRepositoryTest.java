@@ -1,25 +1,23 @@
-package ru.ya.spring3pw.integration.repository;
+package ru.yp.sprint4pw.integration.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.ya.spring3pw.model.Comment;
-import ru.ya.spring3pw.model.Post;
-import ru.ya.spring3pw.repository.H2PostRepository;
-import ru.ya.spring3pw.repository.PostRepository;
+import ru.yp.sprint4pw.model.Comment;
+import ru.yp.sprint4pw.model.Post;
+import ru.yp.sprint4pw.repository.JdbcPostRepository;
+import ru.yp.sprint4pw.repository.PostRepository;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitConfig(classes = {DataSourceConfiguration.class, H2PostRepository.class})
-@TestPropertySource(locations = "classpath:test-application.properties")
-class H2PostRepositoryTest {
+@DataJdbcTest
+@Import(JdbcPostRepository.class)
+class JdbcPostRepositoryTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
