@@ -1,0 +1,194 @@
+package ru.yp.sprint4pw.repository;
+
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
+import org.springframework.stereotype.Repository;
+import ru.yp.sprint4pw.model.Comment;
+import ru.yp.sprint4pw.model.Post;
+
+import java.sql.Array;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+@Repository
+public class JdbcPostRepository implements PostRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+    private final Environment environment;
+
+    private final String BASE_POST_SEARCH_QUERY = """
+                SELECT id,
+                       title,
+                       text,
+                       tags,
+                       likesCount,
+                       (SELECT COUNT(1) FROM comments c
+                       WHERE c.post_id = p.id) AS commentsCount
+                FROM posts p
+            """;
+
+    private final String BASE_COMMENT_SEARCH_QUERY = """
+                SELECT id,
+                       post_id,
+                       text
+                FROM comments
+            """;
+
+    public JdbcPostRepository(JdbcTemplate jdbcTemplate, Environment environment) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.environment = environment;
+    }
+
+    @Override
+    public List<Post> getPosts(String search) {
+        StringBuilder sqlBuilder = new StringBuilder(BASE_POST_SEARCH_QUERY);
+        sqlBuilder.append(" WHERE tags SIMILAR TO ? AND title LIKE ?");
+
+        StringBuilder searchByTagsBuilder = new StringBuilder("%");
+        StringBuilder searchByTitleBuilder = new StringBuilder("%");
+
+        if (!search.isEmpty()) {
+            List<String> criterias = Arrays.stream(search.trim().replaceAll("\\s+", " ").split(" ")).toList();
+
+            searchByTagsBuilder.append("(");
+            for (var criteria : criterias) {
+                if (criteria.startsWith("#")) {
+                    searchByTagsBuilder.append(criteria.substring(1)).append("|");
+                } else
+                    searchByTitleBuilder.append(criteria).append(" ");
+            }
+
+            searchByTagsBuilder.setLength(searchByTagsBuilder.length() - 1);
+            if (searchByTagsBuilder.length() > 1) {
+                searchByTagsBuilder.append(")%");
+            }
+
+            if (searchByTitleBuilder.length() > 1) {
+                searchByTitleBuilder.setLength(searchByTitleBuilder.length() - 1);
+                searchByTitleBuilder.append("%");
+            }
+        }
+
+        return jdbcTemplate.query(
+                sqlBuilder.toString(),
+                (rs, rowNum) -> new Post(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        convertToShortStr(rs.getString("text"), environment.getProperty("post.shorttext.size", Integer.class)),
+                        convertStrtoList(rs.getString("tags")),
+                        rs.getInt("likesCount"),
+                        rs.getInt("commentsCount")
+                ), searchByTagsBuilder.toString(), searchByTitleBuilder.toString()
+                );
+    }
+
+    private String convertToShortStr(String text, Integer limit) {
+        StringBuilder shortText = new StringBuilder(text);
+        if (shortText.length() < limit) return shortText.toString();
+        else {
+            shortText.setLength(limit);
+            return shortText.append("...").toString();
+        }
+    }
+
+    private List<String> convertStrtoList(String tagsStr) {
+        if (tagsStr.equals("[]")) return List.of();
+        else return Arrays.stream(tagsStr.substring(1, tagsStr.length() - 1).split(", ")).toList();
+    }
+
+    @Override
+    public Post getPost(Integer id) {
+        StringBuilder sqlBuilder = new StringBuilder(BASE_POST_SEARCH_QUERY);
+        sqlBuilder.append(" WHERE id = ?");
+
+        return jdbcTemplate.query(
+                sqlBuilder.toString(),
+                (rs, rowNum) -> new Post(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("text"),
+                        convertStrtoList(rs.getString("tags")),
+                        rs.getInt("likesCount"),
+                        rs.getInt("commentsCount")
+                ), id).getFirst();
+    }
+
+    @Override
+    public Post addPost(Post post) {
+        Integer post_id = jdbcTemplate.queryForObject("SELECT nextval('seq_post_id')", Integer.class);
+        post.setId(post_id);
+        post.setLikesCount(0);
+        post.setCommentsCount(0);
+
+        jdbcTemplate.update("INSERT INTO posts(id, title, text, tags) VALUES(?, ?, ?, ?)",
+                post.getId(), post.getTitle(), post.getText(), post.getTags().toString());
+
+        return post;
+    }
+
+    @Override
+    public Post editPost(Post post) {
+        jdbcTemplate.update("UPDATE posts SET title = ?, text = ?, tags = ? WHERE id = ?",
+                post.getTitle(), post.getText(), post.getTags().toString(), post.getId());
+
+        return getPost(post.getId());
+    }
+
+    @Override
+    public void deletePost(Integer id) {
+        jdbcTemplate.update("DELETE FROM posts WHERE id = ?", id);
+    }
+
+    @Override
+    public Integer addLike(Integer id) {
+        jdbcTemplate.update("UPDATE posts SET likesCount = likesCount + 1 WHERE id = ?", id);
+        return jdbcTemplate.queryForObject("SELECT likesCount FROM posts WHERE id = ?", Integer.class, id);
+    }
+
+    @Override
+    public List<Comment> getComments(Integer id) {
+        StringBuilder sqlBuilder = new StringBuilder(BASE_COMMENT_SEARCH_QUERY);
+        sqlBuilder.append(" WHERE post_id = ?");
+
+        return jdbcTemplate.query(
+                sqlBuilder.toString(),
+                (rs, rowNum) -> new Comment(
+                        rs.getInt("id"),
+                        rs.getString("text"),
+                        rs.getInt("post_id")
+                ), id);
+    }
+
+    @Override
+    public Comment getComment(Integer post_id, Integer comment_id) {
+        return getComments(post_id).stream().filter((comment) -> comment.getId().equals(comment_id)).findFirst().orElse(new Comment());
+    }
+
+    @Override
+    public Comment addComment(Integer post_id, Comment comment) {
+        Integer comment_id = jdbcTemplate.queryForObject("SELECT nextval('seq_comment_id')", Integer.class);
+        comment.setId(comment_id);
+
+        jdbcTemplate.update("INSERT INTO comments(id, text, post_id) VALUES(?, ?, ?)",
+                comment.getId(), comment.getText(), comment.getPostId());
+
+        return comment;
+    }
+
+    @Override
+    public Comment editComment(Comment comment) {
+        jdbcTemplate.update("UPDATE comments SET text = ? WHERE id = ?",
+                comment.getText(), comment.getId());
+
+        return getComment(comment.getPostId(), comment.getId());
+    }
+
+    @Override
+    public void deleteComment(Integer comment_id) {
+        jdbcTemplate.update("DELETE FROM comments WHERE id = ?", comment_id);
+    }
+}

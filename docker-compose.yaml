@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   yp-db:
     container_name: yp-db
@@ -8,7 +6,7 @@ services:
       dockerfile: Dockerfile
     image: yp-db
     ports:
-      - "5434:5434"
+      - "5432:5432"
     restart: always
     environment:
       - POSTGRES_USER=yp_user
@@ -25,12 +23,20 @@ services:
     depends_on:
       - yp-db
       
-  yp-tomcat:
-    container_name: yp-tomcat
+  yp-app:
+    container_name: yp-app
     build:
-      context: ./docker-compose/tomcat/
+      context: ./docker-compose/back-app
       dockerfile: Dockerfile
-    image: yp-tomcat
+    image: yp-app
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=yp_user
+      - POSTGRES_PASSWORD=yp_pwd
+      - DB_HOST=yp-db
+      - DB_PORT=5432
+      - DB_NAME=yp_db
+#      - spring.profiles.active=isolation
     ports:
       - "8080:8080"
     depends_on:
@@ -45,4 +51,4 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - yp-tomcat
+      - yp-app
