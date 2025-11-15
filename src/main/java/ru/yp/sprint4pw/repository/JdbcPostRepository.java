@@ -2,10 +2,15 @@ package ru.yp.sprint4pw.repository;
 
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.stereotype.Repository;
 import ru.yp.sprint4pw.model.Comment;
 import ru.yp.sprint4pw.model.Post;
 
+import java.sql.Array;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,30 +46,30 @@ public class JdbcPostRepository implements PostRepository {
     @Override
     public List<Post> getPosts(String search) {
         StringBuilder sqlBuilder = new StringBuilder(BASE_POST_SEARCH_QUERY);
+        sqlBuilder.append(" WHERE tags SIMILAR TO ? AND title LIKE ?");
+
+        StringBuilder searchByTagsBuilder = new StringBuilder("%");
+        StringBuilder searchByTitleBuilder = new StringBuilder("%");
 
         if (!search.isEmpty()) {
-            boolean isFirstCriteria = true;
             List<String> criterias = Arrays.stream(search.trim().replaceAll("\\s+", " ").split(" ")).toList();
-            StringBuilder searchByTitleBuilder = new StringBuilder();
 
+            searchByTagsBuilder.append("(");
             for (var criteria : criterias) {
                 if (criteria.startsWith("#")) {
-                    if (isFirstCriteria) {
-                        sqlBuilder.append(" WHERE ").append("tags LIKE '%").append(criteria.substring(1)).append("%'");
-                        isFirstCriteria = false;
-                    } else
-                        sqlBuilder.append(" AND ").append("tags LIKE '%").append(criteria.substring(1)).append("%'");
+                    searchByTagsBuilder.append(criteria.substring(1)).append("|");
                 } else
                     searchByTitleBuilder.append(criteria).append(" ");
             }
 
-            if (!searchByTitleBuilder.isEmpty()) {
-                searchByTitleBuilder.setLength(searchByTitleBuilder.length() - 1);
+            searchByTagsBuilder.setLength(searchByTagsBuilder.length() - 1);
+            if (searchByTagsBuilder.length() > 1) {
+                searchByTagsBuilder.append(")%");
+            }
 
-                if (isFirstCriteria)
-                    sqlBuilder.append(" WHERE ").append("title LIKE '%").append(searchByTitleBuilder).append("%'");
-                else
-                    sqlBuilder.append(" AND ").append("title LIKE '%").append(searchByTitleBuilder).append("%'");
+            if (searchByTitleBuilder.length() > 1) {
+                searchByTitleBuilder.setLength(searchByTitleBuilder.length() - 1);
+                searchByTitleBuilder.append("%");
             }
         }
 
@@ -77,7 +82,8 @@ public class JdbcPostRepository implements PostRepository {
                         convertStrtoList(rs.getString("tags")),
                         rs.getInt("likesCount"),
                         rs.getInt("commentsCount")
-                ));
+                ), searchByTagsBuilder.toString(), searchByTitleBuilder.toString()
+                );
     }
 
     private String convertToShortStr(String text, Integer limit) {
@@ -97,7 +103,7 @@ public class JdbcPostRepository implements PostRepository {
     @Override
     public Post getPost(Integer id) {
         StringBuilder sqlBuilder = new StringBuilder(BASE_POST_SEARCH_QUERY);
-        sqlBuilder.append(" WHERE ").append("id = ").append(id);
+        sqlBuilder.append(" WHERE id = ?");
 
         return jdbcTemplate.query(
                 sqlBuilder.toString(),
@@ -108,7 +114,7 @@ public class JdbcPostRepository implements PostRepository {
                         convertStrtoList(rs.getString("tags")),
                         rs.getInt("likesCount"),
                         rs.getInt("commentsCount")
-                )).getFirst();
+                ), id).getFirst();
     }
 
     @Override
@@ -146,7 +152,7 @@ public class JdbcPostRepository implements PostRepository {
     @Override
     public List<Comment> getComments(Integer id) {
         StringBuilder sqlBuilder = new StringBuilder(BASE_COMMENT_SEARCH_QUERY);
-        sqlBuilder.append(" WHERE ").append("post_id = ").append(id);
+        sqlBuilder.append(" WHERE post_id = ?");
 
         return jdbcTemplate.query(
                 sqlBuilder.toString(),
@@ -154,7 +160,7 @@ public class JdbcPostRepository implements PostRepository {
                         rs.getInt("id"),
                         rs.getString("text"),
                         rs.getInt("post_id")
-                ));
+                ), id);
     }
 
     @Override
@@ -163,7 +169,7 @@ public class JdbcPostRepository implements PostRepository {
     }
 
     @Override
-    public Comment addComment(Integer post_id, Comment comment){
+    public Comment addComment(Integer post_id, Comment comment) {
         Integer comment_id = jdbcTemplate.queryForObject("SELECT nextval('seq_comment_id')", Integer.class);
         comment.setId(comment_id);
 

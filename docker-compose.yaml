@@ -36,7 +36,7 @@ services:
       - DB_HOST=yp-db
       - DB_PORT=5432
       - DB_NAME=yp_db
-      - spring.profiles.active=isolation
+#      - spring.profiles.active=isolation
     ports:
       - "8080:8080"
     depends_on:
